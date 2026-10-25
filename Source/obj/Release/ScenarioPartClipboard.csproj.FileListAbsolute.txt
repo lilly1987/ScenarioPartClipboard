@@ -1,0 +1,9 @@
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ScenarioPartClipboard.csproj.AssemblyReference.cache
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ScenarioPartClipboard.GeneratedMSBuildEditorConfig.editorconfig
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ScenarioPartClipboard.AssemblyInfoInputs.cache
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ScenarioPartClipboard.AssemblyInfo.cs
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ScenarioPartClipboard.csproj.CoreCompileInputs.cache
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Assemblies\ScenarioPartClipboard.dll
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ScenarioPartClipboard.dll
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\refint\ScenarioPartClipboard.dll
+Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ref\ScenarioPartClipboard.dll

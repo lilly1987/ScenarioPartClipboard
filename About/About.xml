@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Scenario Part Clipboard</name>
+  <author>ChatGPT</author>
+  <packageId>chatgpt.scenariopartclipboard</packageId>
+  <supportedVersions>
+    <li>1.7</li>
+  </supportedVersions>
+  <description>Adds per-part copy, paste, and duplicate controls to the scenario editor.</description>
+</ModMetaData>
