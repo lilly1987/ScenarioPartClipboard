@@ -76,12 +76,14 @@ namespace ScenarioPartClipboard
             if (parts == null || !parts.Contains(__0))
                 return;
 
-            const float buttonSize = 24f;
-            float controlsRight = __result.xMax - 72f;
-            Rect duplicateRect = new Rect(controlsRight - buttonSize, __result.y, buttonSize, buttonSize);
-            Rect pasteRect = new Rect(duplicateRect.x - buttonSize, __result.y, buttonSize, buttonSize);
-            Rect copyRect = new Rect(pasteRect.x - buttonSize, __result.y, buttonSize, buttonSize);
-            Rect dragRect = new Rect(copyRect.x - buttonSize, __result.y, buttonSize, buttonSize);
+            const float buttonSize = 20f;
+            const float buttonGap = 2f;
+            float rowLeft = __result.x - __result.width;
+            float controlsLeft = rowLeft + 72f;
+            Rect dragRect = new Rect(controlsLeft, __result.y + 2f, buttonSize, buttonSize);
+            Rect copyRect = new Rect(dragRect.xMax + buttonGap, dragRect.y, buttonSize, buttonSize);
+            Rect pasteRect = new Rect(copyRect.xMax + buttonGap, dragRect.y, buttonSize, buttonSize);
+            Rect duplicateRect = new Rect(pasteRect.xMax + buttonGap, dragRect.y, buttonSize, buttonSize);
 
             if (Widgets.ButtonImage(copyRect, TexButton.Copy, true, "Copy scenario part"))
                 ScenarioPartClipboardActions.Copy(__0);
