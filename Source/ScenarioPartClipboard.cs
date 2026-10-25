@@ -49,6 +49,9 @@ namespace ScenarioPartClipboard
 
         private static void Postfix(Scenario __state)
         {
+            ScenarioPartDragState.CompletePendingDrop(currentScenario);
+            if (Input.GetMouseButtonUp(0))
+                ScenarioPartDragState.Cancel();
             currentScenario = __state;
         }
 
@@ -58,74 +61,58 @@ namespace ScenarioPartClipboard
         }
     }
 
-    [HarmonyPatch]
-    internal static class ScenarioPartControlsPatch
+    [HarmonyPatch(typeof(Listing_ScenEdit), "GetScenPartRect")]
+    internal static class ScenarioPartHeaderControlsPatch
     {
         private static readonly FieldInfo ScenarioPartsField = AccessTools.Field(typeof(Scenario), "parts");
 
-        private static IEnumerable<MethodBase> TargetMethods()
-        {
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            foreach (Assembly assembly in assemblies)
-            {
-                Type[] types;
-                try
-                {
-                    types = assembly.GetTypes();
-                }
-                catch (ReflectionTypeLoadException exception)
-                {
-                    types = exception.Types;
-                    Log.Warning("[Scenario Part Clipboard] Some types could not be inspected in " +
-                                assembly.GetName().Name + ": " + exception.Message);
-                }
-
-                foreach (Type type in types)
-                {
-                    if (type == null || !typeof(ScenPart).IsAssignableFrom(type))
-                        continue;
-
-                    MethodInfo method = type.GetMethod(
-                        "DoEditInterface",
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic |
-                        BindingFlags.DeclaredOnly,
-                        null,
-                        new[] { typeof(Listing_ScenEdit) },
-                        null);
-                    if (method != null)
-                        yield return method;
-                }
-            }
-        }
-
-        private static void Postfix(ScenPart __instance, Listing_ScenEdit __0)
+        private static void Postfix(ScenPart __0, Rect __result)
         {
             Scenario scenario = ScenarioEditorContextPatch.CurrentScenario;
             if (scenario == null)
                 return;
 
             List<ScenPart> parts = GetParts(scenario);
-            if (parts == null)
+            if (parts == null || !parts.Contains(__0))
                 return;
 
-            int index = parts.IndexOf(__instance);
-            if (index < 0)
-                return;
+            const float buttonSize = 24f;
+            float controlsRight = __result.xMax - 72f;
+            Rect duplicateRect = new Rect(controlsRight - buttonSize, __result.y, buttonSize, buttonSize);
+            Rect pasteRect = new Rect(duplicateRect.x - buttonSize, __result.y, buttonSize, buttonSize);
+            Rect copyRect = new Rect(pasteRect.x - buttonSize, __result.y, buttonSize, buttonSize);
+            Rect dragRect = new Rect(copyRect.x - buttonSize, __result.y, buttonSize, buttonSize);
 
-            Rect controls = __0.GetRect(24f);
-            float buttonWidth = (controls.width - 8f) / 3f;
-            Rect copyRect = new Rect(controls.x, controls.y, buttonWidth, controls.height);
-            Rect pasteRect = new Rect(copyRect.xMax + 4f, controls.y, buttonWidth, controls.height);
-            Rect duplicateRect = new Rect(pasteRect.xMax + 4f, controls.y, buttonWidth, controls.height);
+            if (Widgets.ButtonImage(copyRect, TexButton.Copy, true, "Copy scenario part"))
+                ScenarioPartClipboardActions.Copy(__0);
 
-            if (Widgets.ButtonText(copyRect, "Copy"))
-                ScenarioPartClipboardActions.Copy(__instance);
+            if (Widgets.ButtonImage(pasteRect, TexButton.Paste, true, "Paste scenario part below"))
+                ScenarioPartClipboardActions.PasteAfter(__0, scenario);
 
-            if (Widgets.ButtonText(pasteRect, "Paste"))
-                ScenarioPartClipboardActions.PasteAfter(__instance, scenario);
+            if (Widgets.ButtonImage(duplicateRect, TexButton.NewItem, true, "Duplicate scenario part"))
+                ScenarioPartClipboardActions.DuplicateAfter(__0, scenario);
 
-            if (Widgets.ButtonText(duplicateRect, "Duplicate"))
-                ScenarioPartClipboardActions.DuplicateAfter(__instance, scenario);
+            if (scenario.CanReorder(__0, ReorderDirection.Up) ||
+                scenario.CanReorder(__0, ReorderDirection.Down))
+            {
+                Widgets.DraggableResult dragResult =
+                    Widgets.ButtonImageDraggable(dragRect, TexButton.DragHash);
+                if (dragResult == Widgets.DraggableResult.Dragged)
+                    ScenarioPartDragState.Begin(__0, scenario);
+
+                Event currentEvent = Event.current;
+                if (ScenarioPartDragState.IsDragging &&
+                    Input.GetMouseButtonUp(0) &&
+                    currentEvent != null &&
+                    currentEvent.mousePosition.y >= __result.y &&
+                    currentEvent.mousePosition.y <= __result.yMax)
+                {
+                    ScenarioPartDragState.QueueDropOn(
+                        __0,
+                        scenario,
+                        currentEvent.mousePosition.y >= __result.center.y);
+                }
+            }
         }
 
         internal static List<ScenPart> GetParts(Scenario scenario)
@@ -133,6 +120,86 @@ namespace ScenarioPartClipboard
             if (ScenarioPartsField == null)
                 throw new MissingFieldException(typeof(Scenario).FullName, "parts");
             return (List<ScenPart>)ScenarioPartsField.GetValue(scenario);
+        }
+    }
+
+    internal static class ScenarioPartDragState
+    {
+        private static ScenPart draggedPart;
+        private static Scenario draggedScenario;
+        private static ScenPart pendingTarget;
+        private static bool pendingAfterTarget;
+
+        internal static bool IsDragging
+        {
+            get { return draggedPart != null; }
+        }
+
+        internal static void Begin(ScenPart part, Scenario scenario)
+        {
+            draggedPart = part;
+            draggedScenario = scenario;
+        }
+
+        internal static void QueueDropOn(ScenPart target, Scenario scenario, bool afterTarget)
+        {
+            if (draggedPart == null || draggedScenario != scenario)
+            {
+                Cancel();
+                return;
+            }
+
+            pendingTarget = target;
+            pendingAfterTarget = afterTarget;
+        }
+
+        internal static void CompletePendingDrop(Scenario scenario)
+        {
+            if (pendingTarget == null)
+                return;
+
+            if (draggedPart == null || draggedScenario != scenario || draggedPart == pendingTarget)
+            {
+                Cancel();
+                return;
+            }
+
+            List<ScenPart> parts = ScenarioPartHeaderControlsPatch.GetParts(scenario);
+            int sourceIndex = parts.IndexOf(draggedPart);
+            int targetIndex = parts.IndexOf(pendingTarget);
+            if (sourceIndex < 0 || targetIndex < 0)
+            {
+                Cancel();
+                return;
+            }
+
+            int destinationIndex = targetIndex + (pendingAfterTarget ? 1 : 0);
+            if (sourceIndex < destinationIndex)
+                destinationIndex--;
+
+            while (sourceIndex < destinationIndex &&
+                   scenario.CanReorder(draggedPart, ReorderDirection.Down))
+            {
+                scenario.Reorder(draggedPart, ReorderDirection.Down);
+                sourceIndex++;
+            }
+
+            while (sourceIndex > destinationIndex &&
+                   scenario.CanReorder(draggedPart, ReorderDirection.Up))
+            {
+                scenario.Reorder(draggedPart, ReorderDirection.Up);
+                sourceIndex--;
+            }
+
+            Cancel();
+        }
+
+        internal static void Cancel()
+        {
+            draggedPart = null;
+            draggedScenario = null;
+            pendingTarget = null;
+            pendingAfterTarget = false;
         }
     }
 
@@ -169,7 +236,7 @@ namespace ScenarioPartClipboard
             if (part == null || scenario == null)
                 return;
 
-            List<ScenPart> parts = ScenarioPartControlsPatch.GetParts(scenario);
+            List<ScenPart> parts = ScenarioPartHeaderControlsPatch.GetParts(scenario);
             if (parts == null)
                 return;
 

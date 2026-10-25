@@ -7,3 +7,4 @@ Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Assemblies\
 Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ScenarioPartClipboard.dll
 Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\refint\ScenarioPartClipboard.dll
 Y:\SteamLibrary\steamapps\common\RimWorld\Mods\ScenarioPartClipboard\Source\obj\Release\ref\ScenarioPartClipboard.dll
+C:\Users\lilly\.copilot\session-state\ad8a3ef7-528f-410f-baca-71589a4cd866\validated-build\ScenarioPartClipboard.dll
