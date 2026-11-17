@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ScenarioPartClipboard")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+98d37c33967995e7b8e4d7a78ef3f4ae79a8b19c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bfb96199ec6570339343e258cf6dd0494d7a644e")]
 [assembly: System.Reflection.AssemblyProductAttribute("ScenarioPartClipboard")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ScenarioPartClipboard")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

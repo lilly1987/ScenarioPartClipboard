@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "y:\\SteamLibrary\\steamapps\\common\\RimWorld\\Mods\\ScenarioPartClipboard\\Source\\ScenarioPartClipboard.csproj",
+      "projectUniqueName": "Y:\\SteamLibrary\\steamapps\\common\\RimWorld\\Mods\\ScenarioPartClipboard\\Source\\ScenarioPartClipboard.csproj",
       "projectName": "ScenarioPartClipboard",
-      "projectPath": "y:\\SteamLibrary\\steamapps\\common\\RimWorld\\Mods\\ScenarioPartClipboard\\Source\\ScenarioPartClipboard.csproj",
+      "projectPath": "Y:\\SteamLibrary\\steamapps\\common\\RimWorld\\Mods\\ScenarioPartClipboard\\Source\\ScenarioPartClipboard.csproj",
       "packagesPath": "C:\\Users\\lilly\\.nuget\\packages\\",
-      "outputPath": "y:\\SteamLibrary\\steamapps\\common\\RimWorld\\Mods\\ScenarioPartClipboard\\Source\\obj\\",
+      "outputPath": "Y:\\SteamLibrary\\steamapps\\common\\RimWorld\\Mods\\ScenarioPartClipboard\\Source\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
